@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "871888528147",
+    "project_id": "buzzup-e6882",
+    "storage_bucket": "buzzup-e6882.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:871888528147:android:f5b87759fdd40d633570e6",
+        "android_client_info": {
+          "package_name": "com.example.buzz_up"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqIhUE1hpLLgklF8JhcuN7GFhc794dmOI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
