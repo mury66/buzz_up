@@ -1,86 +1,129 @@
-import 'package:buzz_up/models/message_model.dart';
-import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../firebase/firestore/firestore_manager.dart';
+import '../providers/chat_provider.dart';
 
-import '../constants/constants.dart';
+class ChatScreen extends ConsumerStatefulWidget {
+  final String chatId;
 
-class ChatScreen extends StatefulWidget {
-  static String routeName = '/chat';
-  ChatScreen({super.key});
+  const ChatScreen({super.key, required this.chatId});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
-  TextEditingController messageController = TextEditingController();
+class _ChatScreenState extends ConsumerState<ChatScreen> {
+  final TextEditingController _messageController = TextEditingController();
+
+  void _sendMessage() async {
+    final content = _messageController.text.trim();
+    if (content.isEmpty) return;
+
+    final currentUid = FirebaseAuth.instance.currentUser!.uid;
+    final message = {
+      'senderId': currentUid,
+      'content': content,
+      'time': FieldValue.serverTimestamp(),
+    };
+
+    await FirestoreManager().sendMessage(widget.chatId, message);
+    _messageController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final messagesAsync = ref.watch(chatMessagesProvider(widget.chatId));
+    final otherUserAsync = ref.watch(otherUserNameProvider(widget.chatId));
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat Screen1'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () { Navigator.of(context).pop(); },
+        title: otherUserAsync.when(
+          data: (name) => Text(name),
+          loading: () => const Text('Loading...'),
+          error: (_, __) => const Text('User'),
         ),
       ),
-      body: Container(
-        color: Colors.black26,
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: chat.length,
+      body: Column(
+        children: [
+          // Messages list
+          Expanded(
+            child: messagesAsync.when(
+              data: (messages) {
+                if (messages.isEmpty) {
+                  return const Center(child: Text('No messages yet'));
+                }
+
+                return ListView.builder(
+                  reverse: true,
+                  padding: const EdgeInsets.all(16),
+                  itemCount: messages.length,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: BubbleSpecialThree(
-                        text: chat[index].content,
-                        color: chat[index].role == "sender" ? Colors.green : Colors.grey,
-                        tail: true,
-                        isSender: chat[index].role == "sender",
+                    final message = messages[messages.length - 1 - index];
+                    final isMe = message['senderId'] ==
+                        FirebaseAuth.instance.currentUser!.uid;
+
+                    return Align(
+                      alignment: isMe
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 14),
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isMe ? Colors.blueAccent : Colors.grey[700],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          message['content'] ?? '',
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                     );
-                  }
-              ),
+                  },
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('Error: $e')),
             ),
-            Container(
-              height: 60,
-              margin: EdgeInsets.symmetric(vertical: 20.0),
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              color: Colors.black26,
+          ),
+
+          // Input box
+          SafeArea(
+            child: Padding(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
               child: Row(
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: messageController,
-                      onChanged: (value) {
-
-                      },
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                        hintText: 'Type a message',
-                        hintStyle: TextStyle(color: Colors.white54),
-                        border: InputBorder.none,
+                      controller: _messageController,
+                      decoration: InputDecoration(
+                        hintText: 'Type a message...',
+                        filled: true,
+                        fillColor: Colors.white12,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
                       ),
                     ),
                   ),
+                  const SizedBox(width: 8),
                   IconButton(
-                    icon: const Icon(Icons.send, color: Colors.green,),
-                    onPressed: () {
-                      chat.add(MessageModel(senderId: "sender", content: messageController.text, time: DateTime.now(), id: DateTime.now().toString()));
-                      messageController.clear();
-                      setState((){});
-                    },
+                    onPressed: _sendMessage,
+                    icon: const Icon(Icons.send, color: Colors.blueAccent),
                   ),
                 ],
               ),
-            )
-          ],
-        ),
-      )
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

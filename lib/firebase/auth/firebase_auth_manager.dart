@@ -1,15 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class FirebaseManager {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+import '../firestore/firestore_manager.dart';
 
-  // المستخدم الحالي
+class FirebaseAuthManager {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirestoreManager _firestoreManager = FirestoreManager();
+
   User? get currentUser => _auth.currentUser;
 
-  // Stream لحالة المستخدم (مفيد للتنقل بين Login / Home)
+
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // تسجيل مستخدم جديد
   Future<User?> register({
     required String email,
     required String password,
@@ -21,8 +24,18 @@ class FirebaseManager {
         password: password,
       );
 
-      await cred.user?.updateDisplayName(displayName);
-      await cred.user?.reload();
+      User? user = cred.user;
+
+      if (user != null) {
+        await user.updateDisplayName(displayName);
+        await user.reload();
+
+        await _firestoreManager.saveUserData(
+          uid: user.uid,
+          email: user.email!,
+          displayName: displayName,
+        );
+      }
 
       return _auth.currentUser;
     } on FirebaseAuthException catch (e) {
@@ -30,7 +43,6 @@ class FirebaseManager {
     }
   }
 
-  // تسجيل دخول
   Future<User?> login({
     required String email,
     required String password,
@@ -46,8 +58,17 @@ class FirebaseManager {
     }
   }
 
-  // تسجيل خروج
   Future<void> logout() async {
     await _auth.signOut();
   }
+
+  Future<Map<String, dynamic>?> getUserData(String uid) async {
+    final snapshot = await _firestore.collection('users').doc(uid).get();
+    return snapshot.data();
+  }
+
+  Stream<Map<String, dynamic>?> userDataStream(String uid) {
+    return _firestore.collection('users').doc(uid).snapshots().map((snapshot) => snapshot.data());
+  }
+
 }

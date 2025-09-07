@@ -1,8 +1,10 @@
 import 'package:buzz_up/screens/auth/login_screen.dart';
 import 'package:buzz_up/screens/auth/register_screen.dart';
 import 'package:buzz_up/screens/home_screen.dart';
+import 'package:buzz_up/screens/users_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'firebase_options.dart';
 import 'screens/chat_screen.dart';
@@ -12,7 +14,7 @@ void main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -111,13 +113,13 @@ class MyApp extends StatelessWidget {
       ),
       routes:
       {
-        ChatScreen.routeName: (context) => ChatScreen(),
         HomeScreen.routeName: (context) => HomeScreen(),
         LoginScreen.routeName: (context) => LoginScreen(),
         RegisterScreen.routeName: (context) => RegisterScreen(),
+        UsersScreen.routeName : (context) => UsersScreen(),
       }
       ,
-      initialRoute: RegisterScreen.routeName,
+      initialRoute: LoginScreen.routeName,
     );
   }
 }
