@@ -50,19 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDqIhUE1hpLLgklF8JhcuN7GFhc794dmOI',
-    appId: '1:871888528147:android:f5b87759fdd40d633570e6',
-    messagingSenderId: '871888528147',
-    projectId: 'buzzup-e6882',
-    storageBucket: 'buzzup-e6882.firebasestorage.app',
+    apiKey: 'AIzaSyA1L_3oToxfeH72CxaNYzby99iQQIOXmT4',
+    appId: '1:672512229169:android:b6b89c02bf6f4d4efcfa10',
+    messagingSenderId: '672512229169',
+    projectId: 'groupi-ae087',
+    storageBucket: 'groupi-ae087.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAgFAnnfE5uoMRMQWUGgL5-kK07TWCZ1ac',
-    appId: '1:871888528147:ios:d7327d03e8d1d4e53570e6',
-    messagingSenderId: '871888528147',
-    projectId: 'buzzup-e6882',
-    storageBucket: 'buzzup-e6882.firebasestorage.app',
-    iosBundleId: 'com.example.buzzUp',
+    apiKey: 'AIzaSyAvesq0h078oHHOnTlM8OT-HV8z54A78bQ',
+    appId: '1:672512229169:ios:093b4dd176b566effcfa10',
+    messagingSenderId: '672512229169',
+    projectId: 'groupi-ae087',
+    storageBucket: 'groupi-ae087.firebasestorage.app',
+    iosBundleId: 'com.example.chatApp',
   );
 }

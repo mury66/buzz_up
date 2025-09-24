@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "871888528147",
-    "project_id": "buzzup-e6882",
-    "storage_bucket": "buzzup-e6882.firebasestorage.app"
+    "project_number": "672512229169",
+    "project_id": "groupi-ae087",
+    "storage_bucket": "groupi-ae087.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:871888528147:android:f5b87759fdd40d633570e6",
+        "mobilesdk_app_id": "1:672512229169:android:b6b89c02bf6f4d4efcfa10",
         "android_client_info": {
-          "package_name": "com.example.buzz_up"
+          "package_name": "com.example.chat_app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDqIhUE1hpLLgklF8JhcuN7GFhc794dmOI"
+          "current_key": "AIzaSyA1L_3oToxfeH72CxaNYzby99iQQIOXmT4"
         }
       ],
       "services": {

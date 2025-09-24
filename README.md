@@ -1,4 +1,4 @@
-# buzz_up
+# chat_app
 
 A new Flutter project.
 
